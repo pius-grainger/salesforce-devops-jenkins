@@ -59,13 +59,13 @@
 
   "orgWideEmails": [
     {
-      "displayName": "FCDO Support",
-      "emailAddress": "support@fcdo.gov.uk",
+      "displayName": "Support Team",
+      "emailAddress": "support@mycompany.com",
       "allowAllProfiles": true
     },
     {
-      "displayName": "FCDO No-Reply",
-      "emailAddress": "noreply@fcdo.gov.uk",
+      "displayName": "No-Reply",
+      "emailAddress": "noreply@mycompany.com",
       "allowAllProfiles": false
     }
   ]

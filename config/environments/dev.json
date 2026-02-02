@@ -1,15 +1,15 @@
 {
   "name": "dev",
   "displayName": "Development",
-  "instanceUrl": "https://fcdo--dev.sandbox.my.salesforce.com",
-  "username": "devops@fcdo.gov.uk.dev",
+  "instanceUrl": "https://mycompany--dev.sandbox.my.salesforce.com",
+  "username": "devops@mycompany.com.dev",
   "deployOnPush": true,
   "runApexTests": true,
   "apexTestLevel": "RunLocalTests",
   "minCoveragePercent": 75,
   "runProvarTests": false,
   "provarTestSuite": null,
-  "s3ArtifactBucket": "fcdo-sf-artifacts",
+  "s3ArtifactBucket": "sf-devops-artifacts",
   "s3ArtifactPath": "dev",
   "notifications": {
     "slack": {

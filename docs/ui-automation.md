@@ -4,7 +4,7 @@ This document describes the custom Salesforce CLI plugin for UI-based configurat
 
 ## Overview
 
-The `@fcdo/sf-ui-automation` plugin uses Puppeteer to automate Salesforce configuration tasks that are not available through the Metadata API or Tooling API.
+The `@sf-devops/ui-automation` plugin uses Puppeteer to automate Salesforce configuration tasks that are not available through the Metadata API or Tooling API.
 
 ## Installation
 

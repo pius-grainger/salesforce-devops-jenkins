@@ -3,17 +3,17 @@
     {
       "path": "force-app",
       "default": true,
-      "package": "FCDO-Salesforce",
+      "package": "SF-DevOps-Package",
       "versionName": "ver 1.0",
       "versionNumber": "1.0.0.NEXT",
-      "versionDescription": "FCDO Salesforce managed package"
+      "versionDescription": "Salesforce managed package"
     }
   ],
-  "name": "fcdo-salesforce-devops",
+  "name": "salesforce-devops-poc",
   "namespace": "",
   "sfdcLoginUrl": "https://login.salesforce.com",
   "sourceApiVersion": "59.0",
   "packageAliases": {
-    "FCDO-Salesforce": "0Ho000000000000"
+    "SF-DevOps-Package": "0Ho000000000000"
   }
 }

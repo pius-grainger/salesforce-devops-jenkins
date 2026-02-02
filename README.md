@@ -1,10 +1,10 @@
-# FCDO Salesforce DevOps POC
+# Salesforce Salesforce DevOps POC
 
 A comprehensive proof-of-concept for Salesforce DevOps practices, featuring automated CI/CD pipelines, testing frameworks, and configuration management.
 
 ## Overview
 
-This POC demonstrates enterprise-grade Salesforce DevOps practices for FCDO, including:
+This POC demonstrates enterprise-grade Salesforce DevOps practices for Salesforce, including:
 
 - **Scratch Org Management** - Automated creation and lifecycle management
 - **CI/CD Pipeline** - Jenkins-based multi-stage deployment pipeline
@@ -39,7 +39,7 @@ This POC demonstrates enterprise-grade Salesforce DevOps practices for FCDO, inc
 ```bash
 # Clone the repository
 git clone <repository-url>
-cd fcdo
+cd salesforce-devops-poc
 
 # Install dependencies
 npm install
@@ -65,7 +65,7 @@ sf org login web -a QAOrg
 ## Project Structure
 
 ```
-fcdo/
+salesforce-devops-poc/
 ├── force-app/              # Salesforce source (SFDX format)
 ├── scripts/                # TypeScript DevOps utilities
 ├── plugins/                # Custom Salesforce CLI plugins
@@ -132,7 +132,7 @@ npm run test:e2e
 npm run artifact:package -- -v 1.0.0 -b 123
 
 # Upload to S3
-npm run artifact:upload -- -a artifacts/fcdo-sf-1.0.0-123.zip -e qa
+npm run artifact:upload -- -a artifacts/sf-package-1.0.0-123.zip -e qa
 
 # Download from S3
 npm run artifact:download -- -e qa -v 1.0.0
@@ -213,4 +213,4 @@ Required Jenkins credentials:
 
 ## License
 
-Internal use only - FCDO
+Internal use only - Salesforce

@@ -1,6 +1,6 @@
 # Architecture Overview
 
-This document describes the architecture of the FCDO Salesforce DevOps POC.
+This document describes the architecture of the Salesforce Salesforce DevOps POC.
 
 ## High-Level Architecture
 

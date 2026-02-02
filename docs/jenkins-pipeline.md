@@ -240,7 +240,7 @@ Configure Slack notifications in Jenkins:
 ### Email Notifications
 
 Production deployments send email notifications to:
-- `sf-team@fcdo.gov.uk`
+- `sf-team@mycompany.com`
 
 ## Troubleshooting
 

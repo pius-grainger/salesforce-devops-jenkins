@@ -2,7 +2,7 @@ import { defineConfig } from 'cypress';
 
 export default defineConfig({
   e2e: {
-    baseUrl: process.env.CYPRESS_BASE_URL || 'https://fcdo--dev.sandbox.lightning.force.com',
+    baseUrl: process.env.CYPRESS_BASE_URL || 'https://mycompany--dev.sandbox.lightning.force.com',
     specPattern: 'cypress/e2e/**/*.cy.{js,jsx,ts,tsx}',
     supportFile: 'cypress/support/e2e.ts',
     viewportWidth: 1920,
@@ -20,7 +20,7 @@ export default defineConfig({
       // Salesforce credentials - set via environment variables
       SF_USERNAME: process.env.SF_USERNAME,
       SF_PASSWORD: process.env.SF_PASSWORD,
-      SF_LOGIN_URL: process.env.SF_LOGIN_URL || 'https://fcdo--dev.sandbox.my.salesforce.com',
+      SF_LOGIN_URL: process.env.SF_LOGIN_URL || 'https://mycompany--dev.sandbox.my.salesforce.com',
     },
 
     retries: {

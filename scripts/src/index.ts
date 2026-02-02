@@ -5,8 +5,8 @@ import { Command } from 'commander';
 const program = new Command();
 
 program
-  .name('fcdo-devops')
-  .description('FCDO Salesforce DevOps CLI')
+  .name('sf-devops')
+  .description('Salesforce DevOps CLI')
   .version('1.0.0');
 
 program

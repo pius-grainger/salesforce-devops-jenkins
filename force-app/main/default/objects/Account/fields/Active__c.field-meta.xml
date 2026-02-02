@@ -3,7 +3,7 @@
     <fullName>Active__c</fullName>
     <description>Indicates whether the Account is currently active</description>
     <externalId>false</externalId>
-    <inlineHelpText>Select Yes if this Account is actively engaged with FCDO</inlineHelpText>
+    <inlineHelpText>Select Yes if this Account is actively engaged</inlineHelpText>
     <label>Active</label>
     <required>false</required>
     <trackFeedHistory>false</trackFeedHistory>

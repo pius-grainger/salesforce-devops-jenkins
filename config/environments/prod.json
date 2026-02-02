@@ -1,20 +1,20 @@
 {
   "name": "prod",
   "displayName": "Production",
-  "instanceUrl": "https://fcdo.my.salesforce.com",
-  "username": "devops@fcdo.gov.uk",
+  "instanceUrl": "https://mycompany.my.salesforce.com",
+  "username": "devops@mycompany.com",
   "deployOnPush": false,
   "runApexTests": true,
   "apexTestLevel": "RunLocalTests",
   "minCoveragePercent": 85,
   "runProvarTests": true,
   "provarTestSuite": "SmokeTestSuite",
-  "s3ArtifactBucket": "fcdo-sf-artifacts",
+  "s3ArtifactBucket": "sf-devops-artifacts",
   "s3ArtifactPath": "prod",
   "requireApproval": true,
   "approvers": [
-    "release-manager@fcdo.gov.uk",
-    "sf-admin@fcdo.gov.uk"
+    "release-manager@mycompany.com",
+    "sf-admin@mycompany.com"
   ],
   "deploymentWindow": {
     "allowedDays": ["Saturday", "Sunday"],
@@ -31,7 +31,7 @@
       "onFailure": true
     },
     "email": {
-      "recipients": ["sf-team@fcdo.gov.uk"],
+      "recipients": ["sf-team@mycompany.com"],
       "onSuccess": true,
       "onFailure": true
     }

@@ -1,6 +1,6 @@
 # Deployment Guide
 
-This document describes the deployment process and procedures for the FCDO Salesforce DevOps POC.
+This document describes the deployment process and procedures for the Salesforce DevOps POC.
 
 ## Deployment Overview
 
@@ -22,13 +22,13 @@ This document describes the deployment process and procedures for the FCDO Sales
 All deployments use versioned artifacts stored in S3:
 
 ```
-s3://fcdo-sf-artifacts/
+s3://sf-devops-artifacts/
 ├── dev/
-│   └── fcdo-sf-1.2.3-456.zip
+│   └── sf-package-1.2.3-456.zip
 ├── qa/
-│   └── fcdo-sf-1.2.3-456.zip
+│   └── sf-package-1.2.3-456.zip
 └── prod/
-    └── fcdo-sf-1.2.3-456.zip
+    └── sf-package-1.2.3-456.zip
 ```
 
 ## Deployment Types
@@ -151,13 +151,13 @@ sf project deploy quick -i <deploymentId> -o TargetOrg
 # Package current source
 npm run artifact:package -- -v 1.2.3 -b 456
 
-# Output: artifacts/fcdo-sf-1.2.3-456.zip
+# Output: artifacts/sf-package-1.2.3-456.zip
 ```
 
 ### Artifact Contents
 
 ```
-fcdo-sf-1.2.3-456.zip
+sf-package-1.2.3-456.zip
 ├── force-app/           # Salesforce source
 ├── sfdx-project.json    # Project config
 └── artifact-metadata.json
@@ -180,7 +180,7 @@ fcdo-sf-1.2.3-456.zip
 
 ```bash
 # Upload to QA bucket
-npm run artifact:upload -- -a artifacts/fcdo-sf-1.2.3-456.zip -e qa
+npm run artifact:upload -- -a artifacts/sf-package-1.2.3-456.zip -e qa
 ```
 
 ### Downloading Artifacts
@@ -200,8 +200,8 @@ npm run artifact:download -- -e qa -v 1.2.3-456
 ```json
 {
   "name": "dev",
-  "instanceUrl": "https://fcdo--dev.sandbox.my.salesforce.com",
-  "username": "devops@fcdo.gov.uk.dev",
+  "instanceUrl": "https://mycompany--dev.sandbox.my.salesforce.com",
+  "username": "devops@mycompany.com.dev",
   "apexTestLevel": "RunLocalTests",
   "minCoveragePercent": 75,
   "runProvarTests": false
@@ -213,8 +213,8 @@ npm run artifact:download -- -e qa -v 1.2.3-456
 ```json
 {
   "name": "qa",
-  "instanceUrl": "https://fcdo--qa.sandbox.my.salesforce.com",
-  "username": "devops@fcdo.gov.uk.qa",
+  "instanceUrl": "https://mycompany--qa.sandbox.my.salesforce.com",
+  "username": "devops@mycompany.com.qa",
   "apexTestLevel": "RunLocalTests",
   "minCoveragePercent": 80,
   "runProvarTests": true,
@@ -227,8 +227,8 @@ npm run artifact:download -- -e qa -v 1.2.3-456
 ```json
 {
   "name": "prod",
-  "instanceUrl": "https://fcdo.my.salesforce.com",
-  "username": "devops@fcdo.gov.uk",
+  "instanceUrl": "https://mycompany.my.salesforce.com",
+  "username": "devops@mycompany.com",
   "apexTestLevel": "RunLocalTests",
   "minCoveragePercent": 85,
   "requireApproval": true,

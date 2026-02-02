@@ -1,16 +1,16 @@
 {
-  "name": "fcdo-salesforce-devops",
+  "name": "salesforce-devops-poc",
   "version": "1.0.0",
-  "description": "FCDO Salesforce DevOps POC - CI/CD with Jenkins, Provar, and Semantic Release",
+  "description": "Salesforce DevOps POC - CI/CD with Jenkins, Provar, and Semantic Release",
   "private": true,
   "workspaces": [
     "scripts",
     "plugins/sf-ui-automation"
   ],
   "scripts": {
-    "build": "npm run build -w scripts && npm run build -w @fcdo/sf-ui-automation",
+    "build": "npm run build -w scripts && npm run build -w @sf-devops/ui-automation",
     "build:scripts": "npm run build -w scripts",
-    "build:plugin": "npm run build -w @fcdo/sf-ui-automation",
+    "build:plugin": "npm run build -w @sf-devops/ui-automation",
     "scratch:create": "npm run scratch:create -w scripts",
     "scratch:delete": "npm run scratch:delete -w scripts",
     "deploy:dev": "npm run deploy -- --env dev -w scripts",

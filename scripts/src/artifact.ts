@@ -74,7 +74,7 @@ export async function packageArtifact(options: {
     packageDirectories: sfdxProject.packageDirectories.map((p) => p.path),
   };
 
-  const artifactName = `fcdo-sf-${version}-${buildNumber}.zip`;
+  const artifactName = `sf-package-${version}-${buildNumber}.zip`;
   const artifactPath = join(outputDir, artifactName);
   const metadataPath = join(outputDir, `${artifactName}.metadata.json`);
 
@@ -212,13 +212,13 @@ export async function downloadArtifact(options: {
 
   if (options.version) {
     // Download specific version
-    artifactKey = `${config.s3ArtifactPath}/fcdo-sf-${options.version}.zip`;
+    artifactKey = `${config.s3ArtifactPath}/sf-package-${options.version}.zip`;
   } else {
     // Find latest artifact
     const listResult = await s3Client.send(
       new ListObjectsV2Command({
         Bucket: config.s3ArtifactBucket,
-        Prefix: `${config.s3ArtifactPath}/fcdo-sf-`,
+        Prefix: `${config.s3ArtifactPath}/sf-package-`,
       })
     );
 
@@ -291,7 +291,7 @@ export async function listArtifacts(environment: string): Promise<void> {
   const listResult = await s3Client.send(
     new ListObjectsV2Command({
       Bucket: config.s3ArtifactBucket,
-      Prefix: `${config.s3ArtifactPath}/fcdo-sf-`,
+      Prefix: `${config.s3ArtifactPath}/sf-package-`,
     })
   );
 

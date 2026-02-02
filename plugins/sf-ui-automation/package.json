@@ -1,5 +1,5 @@
 {
-  "name": "@fcdo/sf-ui-automation",
+  "name": "@sf-devops/ui-automation",
   "version": "1.0.0",
   "description": "Custom Salesforce CLI plugin for UI-based configuration automation using Puppeteer",
   "main": "dist/index.js",

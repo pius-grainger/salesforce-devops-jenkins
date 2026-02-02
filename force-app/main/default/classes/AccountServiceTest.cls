@@ -1,6 +1,6 @@
 /**
  * @description Test class for AccountService
- * @author FCDO DevOps Team
+ * @author DevOps Team
  */
 @isTest
 private class AccountServiceTest {

@@ -1,11 +1,11 @@
 {
-  "name": "@fcdo/devops-scripts",
+  "name": "@sf-devops/scripts",
   "version": "1.0.0",
-  "description": "DevOps automation scripts for FCDO Salesforce CI/CD",
+  "description": "DevOps automation scripts for Salesforce CI/CD",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "bin": {
-    "fcdo-devops": "./dist/index.js"
+    "sf-devops": "./dist/index.js"
   },
   "scripts": {
     "build": "tsc",

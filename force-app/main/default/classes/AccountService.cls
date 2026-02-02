@@ -1,6 +1,6 @@
 /**
  * @description Service class for Account-related business logic
- * @author FCDO DevOps Team
+ * @author DevOps Team
  */
 public with sharing class AccountService {
 

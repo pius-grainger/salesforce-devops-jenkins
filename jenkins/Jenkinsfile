@@ -1,7 +1,7 @@
 #!/usr/bin/env groovy
 
 /**
- * FCDO Salesforce DevOps Pipeline
+ * Salesforce DevOps Pipeline
  *
  * This pipeline handles:
  * - Scratch org creation and testing for feature branches
@@ -44,7 +44,7 @@ pipeline {
         NODE_VERSION = '18'
 
         // Derived variables
-        SCRATCH_ORG_ALIAS = "fcdo-scratch-${BUILD_NUMBER}"
+        SCRATCH_ORG_ALIAS = "scratch-${BUILD_NUMBER}"
         ARTIFACT_VERSION = ''
     }
 
@@ -53,7 +53,7 @@ pipeline {
             steps {
                 script {
                     echo "=".multiply(60)
-                    echo "FCDO Salesforce DevOps Pipeline"
+                    echo "Salesforce DevOps Pipeline"
                     echo "=".multiply(60)
                     echo "Branch: ${env.BRANCH_NAME ?: env.GIT_BRANCH}"
                     echo "Build: ${BUILD_NUMBER}"
@@ -276,7 +276,7 @@ pipeline {
 
                     sh """
                         npm run artifact:upload -- \
-                            -a artifacts/fcdo-sf-${ARTIFACT_VERSION}-${BUILD_NUMBER}.zip \
+                            -a artifacts/sf-package-${ARTIFACT_VERSION}-${BUILD_NUMBER}.zip \
                             -e ${targetEnv}
                     """
                 }
@@ -420,7 +420,7 @@ pipeline {
                     emailext(
                         subject: "Production Deployment Successful - ${TAG_NAME}",
                         body: "Successfully deployed ${TAG_NAME} to Salesforce Production",
-                        to: 'sf-team@fcdo.gov.uk'
+                        to: 'sf-team@mycompany.com'
                     )
                 }
                 failure {
@@ -433,7 +433,7 @@ pipeline {
                     emailext(
                         subject: "Production Deployment FAILED - ${TAG_NAME}",
                         body: "Failed to deploy ${TAG_NAME} to Salesforce Production. Please investigate immediately.",
-                        to: 'sf-team@fcdo.gov.uk'
+                        to: 'sf-team@mycompany.com'
                     )
                 }
             }

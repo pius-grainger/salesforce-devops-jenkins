@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  FCDO Provar Test Automation Build File
+  Provar Test Automation Build File
 
   This ANT build file provides tasks for running Provar automated tests
   as part of the Jenkins CI/CD pipeline.
@@ -19,7 +19,7 @@
     testSuite       - Name of test suite to run (default: RegressionSuite)
     resultsPath     - Path for test results (default: Results)
 -->
-<project name="FCDO-Provar-Tests" default="run-tests" basedir=".">
+<project name="SF-Provar-Tests" default="run-tests" basedir=".">
 
     <!-- Properties with defaults -->
     <property name="provarHome" value="/opt/provar"/>

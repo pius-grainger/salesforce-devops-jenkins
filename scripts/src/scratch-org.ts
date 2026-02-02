@@ -37,7 +37,7 @@ export async function createScratchOrg(options: {
   devHub?: string;
   noNamespace?: boolean;
 }): Promise<ScratchOrgResult> {
-  const alias = options.alias || `fcdo-scratch-${Date.now()}`;
+  const alias = options.alias || `scratch-${Date.now()}`;
   const duration = options.durationDays || 7;
 
   console.log(`Creating scratch org with alias: ${alias}`);

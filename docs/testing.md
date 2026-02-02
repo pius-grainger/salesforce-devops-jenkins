@@ -1,6 +1,6 @@
 # Testing Strategy
 
-This document describes the testing approach for the FCDO Salesforce DevOps POC.
+This document describes the testing approach for the Salesforce DevOps POC.
 
 ## Testing Pyramid
 
