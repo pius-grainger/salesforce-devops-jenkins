@@ -20,7 +20,6 @@ This POC demonstrates enterprise-grade Salesforce DevOps practices for Salesforc
 | Language | TypeScript |
 | CI/CD | Jenkins |
 | Testing | Apex, Provar, Cypress |
-| Databases | PostgreSQL, Redis |
 | Artifact Storage | AWS S3 |
 | Versioning | Semantic Release |
 

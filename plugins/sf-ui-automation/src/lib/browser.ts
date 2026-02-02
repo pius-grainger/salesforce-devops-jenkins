@@ -48,7 +48,7 @@ export class BrowserManager {
 
     // Launch browser
     const launchOptions: PuppeteerLaunchOptions = {
-      headless: this.options.headless ? 'new' : false,
+      headless: this.options.headless ?? true,
       slowMo: this.options.slowMo,
       args: [
         '--no-sandbox',
@@ -223,7 +223,7 @@ export const SalesforceUI = {
     const toast = await page.waitForSelector('.toastMessage, .slds-notify__content', {
       timeout: 30000,
     });
-    const message = await toast?.evaluate((el) => el.textContent || '');
+    const message = await toast?.evaluate((el) => el.textContent || '') ?? '';
 
     if (expectedMessage && !message.includes(expectedMessage)) {
       throw new Error(`Expected toast "${expectedMessage}" but got "${message}"`);
