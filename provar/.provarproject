@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ProvarProject>
+    <projectName>FCDO-Salesforce-Tests</projectName>
+    <projectVersion>1.0.0</projectVersion>
+
+    <!-- Salesforce Connections -->
+    <connections>
+        <connection name="Dev">
+            <type>Salesforce</type>
+            <loginUrl>https://fcdo--dev.sandbox.my.salesforce.com</loginUrl>
+            <username>${SF_DEV_USERNAME}</username>
+            <password>${SF_DEV_PASSWORD}</password>
+            <securityToken>${SF_DEV_TOKEN}</securityToken>
+        </connection>
+        <connection name="QA">
+            <type>Salesforce</type>
+            <loginUrl>https://fcdo--qa.sandbox.my.salesforce.com</loginUrl>
+            <username>${SF_QA_USERNAME}</username>
+            <password>${SF_QA_PASSWORD}</password>
+            <securityToken>${SF_QA_TOKEN}</securityToken>
+        </connection>
+        <connection name="Prod">
+            <type>Salesforce</type>
+            <loginUrl>https://fcdo.my.salesforce.com</loginUrl>
+            <username>${SF_PROD_USERNAME}</username>
+            <password>${SF_PROD_PASSWORD}</password>
+            <securityToken>${SF_PROD_TOKEN}</securityToken>
+        </connection>
+    </connections>
+
+    <!-- Test Settings -->
+    <settings>
+        <defaultBrowser>Chrome_Headless</defaultBrowser>
+        <defaultTimeout>60</defaultTimeout>
+        <screenshotOnFailure>true</screenshotOnFailure>
+        <screenshotOnSuccess>false</screenshotOnSuccess>
+    </settings>
+
+    <!-- Test Data Locations -->
+    <testData>
+        <location>tests/testdata</location>
+    </testData>
+
+</ProvarProject>

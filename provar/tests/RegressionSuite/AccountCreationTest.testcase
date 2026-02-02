@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Provar Test Case: Account Creation Test
+  Tests the creation of a new Account in Salesforce
+
+  This test validates:
+  1. User can navigate to Accounts
+  2. User can create a new Account
+  3. Account is saved successfully
+  4. Account fields are populated correctly
+-->
+<testCase>
+    <summary>
+        <name>AccountCreationTest</name>
+        <description>Verify that users can create new Accounts in Salesforce</description>
+        <testCaseType>Regression</testCaseType>
+        <tags>
+            <tag>Account</tag>
+            <tag>CRUD</tag>
+            <tag>Regression</tag>
+        </tags>
+    </summary>
+
+    <steps>
+        <!-- Step 1: Open Salesforce and navigate to Accounts -->
+        <step id="1" type="UIAction">
+            <name>OpenSalesforceHomePage</name>
+            <action>Open</action>
+            <target>connection://Salesforce</target>
+        </step>
+
+        <step id="2" type="UIAction">
+            <name>NavigateToAccounts</name>
+            <action>Click</action>
+            <target>//a[@title='Accounts']</target>
+            <wait>5</wait>
+        </step>
+
+        <!-- Step 2: Click New Account button -->
+        <step id="3" type="UIAction">
+            <name>ClickNewAccount</name>
+            <action>Click</action>
+            <target>//a[@title='New']</target>
+            <wait>3</wait>
+        </step>
+
+        <!-- Step 3: Fill in Account details -->
+        <step id="4" type="UIAction">
+            <name>EnterAccountName</name>
+            <action>Set</action>
+            <target>//input[@name='Name']</target>
+            <value>${testData.accountName}</value>
+        </step>
+
+        <step id="5" type="UIAction">
+            <name>SelectAccountType</name>
+            <action>Select</action>
+            <target>//select[@name='Type']</target>
+            <value>Customer - Direct</value>
+        </step>
+
+        <step id="6" type="UIAction">
+            <name>SelectIndustry</name>
+            <action>Select</action>
+            <target>//select[@name='Industry']</target>
+            <value>Government</value>
+        </step>
+
+        <step id="7" type="UIAction">
+            <name>EnterBillingStreet</name>
+            <action>Set</action>
+            <target>//textarea[@name='BillingStreet']</target>
+            <value>King Charles Street</value>
+        </step>
+
+        <step id="8" type="UIAction">
+            <name>EnterBillingCity</name>
+            <action>Set</action>
+            <target>//input[@name='BillingCity']</target>
+            <value>London</value>
+        </step>
+
+        <step id="9" type="UIAction">
+            <name>EnterBillingPostalCode</name>
+            <action>Set</action>
+            <target>//input[@name='BillingPostalCode']</target>
+            <value>SW1A 2AH</value>
+        </step>
+
+        <step id="10" type="UIAction">
+            <name>EnterBillingCountry</name>
+            <action>Set</action>
+            <target>//input[@name='BillingCountry']</target>
+            <value>United Kingdom</value>
+        </step>
+
+        <!-- Step 4: Save the Account -->
+        <step id="11" type="UIAction">
+            <name>SaveAccount</name>
+            <action>Click</action>
+            <target>//button[@title='Save']</target>
+            <wait>5</wait>
+        </step>
+
+        <!-- Step 5: Verify Account was created -->
+        <step id="12" type="Assertion">
+            <name>VerifyAccountCreated</name>
+            <assertionType>ElementPresent</assertionType>
+            <target>//span[contains(@class, 'toastMessage') and contains(text(), 'was created')]</target>
+            <message>Account should be created successfully</message>
+        </step>
+
+        <step id="13" type="Assertion">
+            <name>VerifyAccountNameDisplayed</name>
+            <assertionType>ElementText</assertionType>
+            <target>//h1//span[contains(@class, 'uiOutputText')]</target>
+            <expectedValue>${testData.accountName}</expectedValue>
+            <message>Account name should be displayed on the record page</message>
+        </step>
+
+        <!-- Step 6: Verify Account fields -->
+        <step id="14" type="Assertion">
+            <name>VerifyAccountType</name>
+            <assertionType>FieldValue</assertionType>
+            <object>Account</object>
+            <field>Type</field>
+            <expectedValue>Customer - Direct</expectedValue>
+        </step>
+
+        <step id="15" type="Assertion">
+            <name>VerifyIndustry</name>
+            <assertionType>FieldValue</assertionType>
+            <object>Account</object>
+            <field>Industry</field>
+            <expectedValue>Government</expectedValue>
+        </step>
+
+        <!-- Cleanup: Delete test Account -->
+        <step id="16" type="DataAction">
+            <name>DeleteTestAccount</name>
+            <action>Delete</action>
+            <object>Account</object>
+            <condition>Name = '${testData.accountName}'</condition>
+        </step>
+    </steps>
+
+    <testData>
+        <variable name="accountName" value="Provar Test Account ${timestamp}"/>
+    </testData>
+
+</testCase>

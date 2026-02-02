@@ -1,0 +1,72 @@
+{
+  "$schema": "./setup-config.schema.json",
+  "_comment": "UI Automation configuration for QA environment",
+
+  "sessionSettings": {
+    "sessionTimeout": 120,
+    "forceLogoutOnSessionTimeout": true,
+    "lockSessionsToIp": false,
+    "requireHttpOnly": true,
+    "requireSecureConnections": true
+  },
+
+  "sharingSettings": [
+    {
+      "objectName": "Account",
+      "internalAccess": "Public Read Only",
+      "externalAccess": "Private",
+      "grantAccessUsingHierarchies": true
+    },
+    {
+      "objectName": "Contact",
+      "internalAccess": "Controlled by Parent",
+      "grantAccessUsingHierarchies": true
+    },
+    {
+      "objectName": "Case",
+      "internalAccess": "Private",
+      "externalAccess": "Private",
+      "grantAccessUsingHierarchies": true
+    }
+  ],
+
+  "einsteinActivityCapture": {
+    "enabled": true,
+    "captureEmails": true,
+    "captureEvents": true
+  },
+
+  "omniChannel": {
+    "enabled": true,
+    "enableSkillBasedRouting": true,
+    "enableExternalRouting": false
+  },
+
+  "flows": [
+    {
+      "flowApiName": "Account_Assignment_Flow",
+      "activate": true
+    },
+    {
+      "flowApiName": "Case_Escalation_Flow",
+      "activate": true
+    },
+    {
+      "flowApiName": "Debug_Test_Flow",
+      "activate": false
+    }
+  ],
+
+  "orgWideEmails": [
+    {
+      "displayName": "FCDO Support",
+      "emailAddress": "support@fcdo.gov.uk",
+      "allowAllProfiles": true
+    },
+    {
+      "displayName": "FCDO No-Reply",
+      "emailAddress": "noreply@fcdo.gov.uk",
+      "allowAllProfiles": false
+    }
+  ]
+}

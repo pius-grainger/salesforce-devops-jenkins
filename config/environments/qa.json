@@ -1,0 +1,22 @@
+{
+  "name": "qa",
+  "displayName": "Quality Assurance",
+  "instanceUrl": "https://fcdo--qa.sandbox.my.salesforce.com",
+  "username": "devops@fcdo.gov.uk.qa",
+  "deployOnPush": false,
+  "runApexTests": true,
+  "apexTestLevel": "RunLocalTests",
+  "minCoveragePercent": 80,
+  "runProvarTests": true,
+  "provarTestSuite": "RegressionSuite",
+  "s3ArtifactBucket": "fcdo-sf-artifacts",
+  "s3ArtifactPath": "qa",
+  "requireApproval": false,
+  "notifications": {
+    "slack": {
+      "channel": "#sf-qa-deployments",
+      "onSuccess": true,
+      "onFailure": true
+    }
+  }
+}

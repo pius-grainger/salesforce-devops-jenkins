@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Provar Test Case: Login Smoke Test
+  Basic smoke test to verify Salesforce login functionality
+-->
+<testCase>
+    <summary>
+        <name>LoginTest</name>
+        <description>Verify successful login to Salesforce</description>
+        <testCaseType>Smoke</testCaseType>
+        <tags>
+            <tag>Login</tag>
+            <tag>Smoke</tag>
+            <tag>Critical</tag>
+        </tags>
+    </summary>
+
+    <steps>
+        <!-- Step 1: Open Salesforce login page -->
+        <step id="1" type="UIAction">
+            <name>OpenSalesforceLogin</name>
+            <action>Open</action>
+            <target>connection://Salesforce</target>
+        </step>
+
+        <!-- Step 2: Verify home page loads -->
+        <step id="2" type="Assertion">
+            <name>VerifyHomePageLoaded</name>
+            <assertionType>ElementPresent</assertionType>
+            <target>//div[contains(@class, 'slds-global-header')]</target>
+            <wait>10</wait>
+            <message>Salesforce home page should load successfully</message>
+        </step>
+
+        <!-- Step 3: Verify user is logged in -->
+        <step id="3" type="Assertion">
+            <name>VerifyUserProfile</name>
+            <assertionType>ElementPresent</assertionType>
+            <target>//span[contains(@class, 'uiImage') and @data-aura-class='uiImage']</target>
+            <message>User profile image should be visible</message>
+        </step>
+
+        <!-- Step 4: Verify App Launcher is accessible -->
+        <step id="4" type="UIAction">
+            <name>VerifyAppLauncher</name>
+            <action>Click</action>
+            <target>//div[@class='slds-icon-waffle']</target>
+            <wait>3</wait>
+        </step>
+
+        <step id="5" type="Assertion">
+            <name>VerifyAppLauncherOpened</name>
+            <assertionType>ElementPresent</assertionType>
+            <target>//div[contains(@class, 'appLauncher')]</target>
+            <message>App Launcher should open successfully</message>
+        </step>
+    </steps>
+
+</testCase>

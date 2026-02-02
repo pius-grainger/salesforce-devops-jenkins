@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  FCDO Provar Test Automation Build File
+
+  This ANT build file provides tasks for running Provar automated tests
+  as part of the Jenkins CI/CD pipeline.
+
+  Prerequisites:
+  - Provar installed at ${provarHome}
+  - Valid Provar license
+  - Salesforce org credentials configured in Provar
+
+  Usage:
+    ant -f build.xml run-tests -DprovarHome=/opt/provar -DtestEnvironment=qa -DtestSuite=RegressionSuite
+
+  Properties:
+    provarHome      - Path to Provar installation (required)
+    testEnvironment - Target Salesforce environment (dev, qa, prod)
+    testSuite       - Name of test suite to run (default: RegressionSuite)
+    resultsPath     - Path for test results (default: Results)
+-->
+<project name="FCDO-Provar-Tests" default="run-tests" basedir=".">
+
+    <!-- Properties with defaults -->
+    <property name="provarHome" value="/opt/provar"/>
+    <property name="testEnvironment" value="qa"/>
+    <property name="testSuite" value="RegressionSuite"/>
+    <property name="resultsPath" value="${basedir}/Results"/>
+    <property name="testProject" value="${basedir}"/>
+    <property name="browser" value="Chrome_Headless"/>
+    <property name="timeout" value="300000"/>
+
+    <!-- Derived properties -->
+    <property name="provarLibPath" value="${provarHome}/lib"/>
+    <property name="testCasePath" value="${testProject}/tests/${testSuite}"/>
+
+    <!-- Timestamp for results -->
+    <tstamp>
+        <format property="timestamp" pattern="yyyyMMdd_HHmmss"/>
+    </tstamp>
+
+    <!-- Define Provar classpath -->
+    <path id="provar.classpath">
+        <fileset dir="${provarLibPath}">
+            <include name="**/*.jar"/>
+        </fileset>
+    </path>
+
+    <!-- Clean previous results -->
+    <target name="clean">
+        <echo message="Cleaning previous test results..."/>
+        <delete dir="${resultsPath}" failonerror="false"/>
+        <mkdir dir="${resultsPath}"/>
+        <mkdir dir="${resultsPath}/${timestamp}"/>
+    </target>
+
+    <!-- Validate prerequisites -->
+    <target name="validate">
+        <echo message="Validating Provar installation..."/>
+
+        <available file="${provarHome}" type="dir" property="provar.installed"/>
+        <fail unless="provar.installed"
+              message="Provar not found at ${provarHome}. Please set provarHome property."/>
+
+        <available file="${testCasePath}" type="dir" property="testsuite.exists"/>
+        <fail unless="testsuite.exists"
+              message="Test suite not found: ${testCasePath}"/>
+
+        <echo message="Provar Home: ${provarHome}"/>
+        <echo message="Test Environment: ${testEnvironment}"/>
+        <echo message="Test Suite: ${testSuite}"/>
+        <echo message="Browser: ${browser}"/>
+    </target>
+
+    <!-- Run Provar tests -->
+    <target name="run-tests" depends="clean, validate">
+        <echo message="==========================================="/>
+        <echo message="Running Provar Tests"/>
+        <echo message="==========================================="/>
+        <echo message="Environment: ${testEnvironment}"/>
+        <echo message="Test Suite: ${testSuite}"/>
+        <echo message="Results Path: ${resultsPath}/${timestamp}"/>
+        <echo message="==========================================="/>
+
+        <java classname="com.provar.testrunner.TestRunner"
+              fork="true"
+              failonerror="true"
+              maxmemory="2048m"
+              timeout="${timeout}">
+            <classpath refid="provar.classpath"/>
+
+            <!-- Provar configuration -->
+            <arg value="-projectPath"/>
+            <arg value="${testProject}"/>
+
+            <arg value="-testEnvironment"/>
+            <arg value="${testEnvironment}"/>
+
+            <arg value="-testSuite"/>
+            <arg value="${testSuite}"/>
+
+            <arg value="-resultsPath"/>
+            <arg value="${resultsPath}/${timestamp}"/>
+
+            <arg value="-browser"/>
+            <arg value="${browser}"/>
+
+            <!-- Generate JUnit XML for Jenkins -->
+            <arg value="-resultsFormat"/>
+            <arg value="JUnit"/>
+
+            <!-- Additional options -->
+            <arg value="-stopOnError"/>
+            <arg value="false"/>
+
+            <arg value="-screenshotsOnFailure"/>
+            <arg value="true"/>
+
+            <!-- JVM options -->
+            <jvmarg value="-Dwebdriver.chrome.driver=${provarHome}/drivers/chromedriver"/>
+            <jvmarg value="-Dprovar.home=${provarHome}"/>
+        </java>
+
+        <!-- Copy results to standard location for Jenkins -->
+        <copy todir="${resultsPath}">
+            <fileset dir="${resultsPath}/${timestamp}">
+                <include name="**/*.xml"/>
+            </fileset>
+        </copy>
+
+        <echo message="==========================================="/>
+        <echo message="Provar Tests Complete"/>
+        <echo message="Results: ${resultsPath}/${timestamp}"/>
+        <echo message="==========================================="/>
+    </target>
+
+    <!-- Run smoke tests only -->
+    <target name="run-smoke-tests">
+        <antcall target="run-tests">
+            <param name="testSuite" value="SmokeTestSuite"/>
+        </antcall>
+    </target>
+
+    <!-- Run regression tests -->
+    <target name="run-regression-tests">
+        <antcall target="run-tests">
+            <param name="testSuite" value="RegressionSuite"/>
+        </antcall>
+    </target>
+
+    <!-- Generate HTML report from JUnit results -->
+    <target name="generate-report" depends="run-tests">
+        <echo message="Generating HTML test report..."/>
+
+        <junitreport todir="${resultsPath}">
+            <fileset dir="${resultsPath}">
+                <include name="**/*.xml"/>
+            </fileset>
+            <report format="frames" todir="${resultsPath}/html"/>
+        </junitreport>
+
+        <echo message="HTML report generated: ${resultsPath}/html/index.html"/>
+    </target>
+
+</project>

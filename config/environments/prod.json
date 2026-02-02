@@ -1,0 +1,39 @@
+{
+  "name": "prod",
+  "displayName": "Production",
+  "instanceUrl": "https://fcdo.my.salesforce.com",
+  "username": "devops@fcdo.gov.uk",
+  "deployOnPush": false,
+  "runApexTests": true,
+  "apexTestLevel": "RunLocalTests",
+  "minCoveragePercent": 85,
+  "runProvarTests": true,
+  "provarTestSuite": "SmokeTestSuite",
+  "s3ArtifactBucket": "fcdo-sf-artifacts",
+  "s3ArtifactPath": "prod",
+  "requireApproval": true,
+  "approvers": [
+    "release-manager@fcdo.gov.uk",
+    "sf-admin@fcdo.gov.uk"
+  ],
+  "deploymentWindow": {
+    "allowedDays": ["Saturday", "Sunday"],
+    "allowedHours": {
+      "start": "06:00",
+      "end": "10:00"
+    },
+    "timezone": "Europe/London"
+  },
+  "notifications": {
+    "slack": {
+      "channel": "#sf-prod-deployments",
+      "onSuccess": true,
+      "onFailure": true
+    },
+    "email": {
+      "recipients": ["sf-team@fcdo.gov.uk"],
+      "onSuccess": true,
+      "onFailure": true
+    }
+  }
+}
