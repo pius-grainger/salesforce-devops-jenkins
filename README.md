@@ -1,4 +1,4 @@
-# Salesforce Salesforce DevOps POC
+# Salesforce DevOps POC
 
 A comprehensive proof-of-concept for Salesforce DevOps practices, featuring automated CI/CD pipelines, testing frameworks, and configuration management.
 
