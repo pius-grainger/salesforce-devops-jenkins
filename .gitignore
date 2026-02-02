@@ -1,0 +1,47 @@
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# TypeScript
+dist/
+*.js.map
+*.tsbuildinfo
+
+# Salesforce
+.sf/
+.sfdx/
+*.scratch-def.json.backup
+
+# IDE
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Environment
+.env
+.env.local
+.env.*.local
+*.pem
+credentials.json
+
+# Test output
+coverage/
+test-results/
+cypress/videos/
+cypress/screenshots/
+provar/Results/
+
+# Build artifacts
+artifacts/
+*.zip
+
+# Logs
+logs/
+*.log

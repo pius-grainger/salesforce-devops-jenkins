@@ -1,0 +1,46 @@
+{
+  "name": "fcdo-salesforce-devops",
+  "version": "1.0.0",
+  "description": "FCDO Salesforce DevOps POC - CI/CD with Jenkins, Provar, and Semantic Release",
+  "private": true,
+  "workspaces": [
+    "scripts",
+    "plugins/sf-ui-automation"
+  ],
+  "scripts": {
+    "build": "npm run build -w scripts && npm run build -w @fcdo/sf-ui-automation",
+    "build:scripts": "npm run build -w scripts",
+    "build:plugin": "npm run build -w @fcdo/sf-ui-automation",
+    "scratch:create": "npm run scratch:create -w scripts",
+    "scratch:delete": "npm run scratch:delete -w scripts",
+    "deploy:dev": "npm run deploy -- --env dev -w scripts",
+    "deploy:qa": "npm run deploy -- --env qa -w scripts",
+    "deploy:prod": "npm run deploy -- --env prod -w scripts",
+    "test:apex": "npm run test:apex -w scripts",
+    "test:e2e": "cypress run",
+    "test:provar": "ant -f provar/build.xml run-tests",
+    "artifact:package": "npm run artifact:package -w scripts",
+    "artifact:upload": "npm run artifact:upload -w scripts",
+    "artifact:download": "npm run artifact:download -w scripts",
+    "release": "semantic-release",
+    "ui:install-plugin": "sf plugins link plugins/sf-ui-automation",
+    "ui:config:session": "sf ui config session",
+    "ui:config:sharing": "sf ui config sharing",
+    "ui:setup:flow": "sf ui setup flow",
+    "ui:setup:apply": "sf ui setup apply"
+  },
+  "devDependencies": {
+    "@salesforce/cli": "^2.30.0",
+    "cypress": "^13.6.0",
+    "semantic-release": "^23.0.0",
+    "@semantic-release/changelog": "^6.0.3",
+    "@semantic-release/commit-analyzer": "^11.1.0",
+    "@semantic-release/exec": "^6.0.3",
+    "@semantic-release/git": "^10.0.1",
+    "@semantic-release/release-notes-generator": "^12.1.0",
+    "typescript": "^5.3.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

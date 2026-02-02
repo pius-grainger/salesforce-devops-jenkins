@@ -1,0 +1,19 @@
+{
+  "packageDirectories": [
+    {
+      "path": "force-app",
+      "default": true,
+      "package": "FCDO-Salesforce",
+      "versionName": "ver 1.0",
+      "versionNumber": "1.0.0.NEXT",
+      "versionDescription": "FCDO Salesforce managed package"
+    }
+  ],
+  "name": "fcdo-salesforce-devops",
+  "namespace": "",
+  "sfdcLoginUrl": "https://login.salesforce.com",
+  "sourceApiVersion": "59.0",
+  "packageAliases": {
+    "FCDO-Salesforce": "0Ho000000000000"
+  }
+}
