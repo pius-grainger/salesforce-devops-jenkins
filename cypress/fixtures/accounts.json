@@ -1,0 +1,25 @@
+{
+  "testAccount": {
+    "Name": "Cypress Test Account",
+    "Type": "Customer - Direct",
+    "Industry": "Government",
+    "BillingStreet": "King Charles Street",
+    "BillingCity": "London",
+    "BillingPostalCode": "SW1A 2AH",
+    "BillingCountry": "United Kingdom",
+    "Description": "Test Account created by Cypress E2E tests"
+  },
+  "partnerAccount": {
+    "Name": "Partner Test Account",
+    "Type": "Partner",
+    "Industry": "Technology",
+    "BillingStreet": "1 Partner Way",
+    "BillingCity": "Manchester",
+    "BillingPostalCode": "M1 1AA",
+    "BillingCountry": "United Kingdom"
+  },
+  "searchTerms": {
+    "validSearch": "Test",
+    "noResultsSearch": "ZZZZNONEXISTENT999"
+  }
+}

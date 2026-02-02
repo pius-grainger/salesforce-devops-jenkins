@@ -1,0 +1,58 @@
+{
+  "name": "@fcdo/sf-ui-automation",
+  "version": "1.0.0",
+  "description": "Custom Salesforce CLI plugin for UI-based configuration automation using Puppeteer",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "license": "MIT",
+  "scripts": {
+    "build": "tsc",
+    "clean": "rm -rf dist",
+    "lint": "eslint src/**/*.ts",
+    "test": "jest",
+    "prepack": "npm run build"
+  },
+  "keywords": [
+    "salesforce",
+    "sf-plugin",
+    "puppeteer",
+    "automation",
+    "devops"
+  ],
+  "files": [
+    "dist",
+    "messages"
+  ],
+  "dependencies": {
+    "@oclif/core": "^3.15.0",
+    "@salesforce/core": "^6.5.0",
+    "@salesforce/sf-plugins-core": "^7.1.0",
+    "puppeteer": "^22.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "typescript": "^5.3.0"
+  },
+  "oclif": {
+    "commands": "./dist/commands",
+    "bin": "sf",
+    "topicSeparator": " ",
+    "topics": {
+      "ui": {
+        "description": "UI automation commands for Salesforce configuration"
+      },
+      "ui:config": {
+        "description": "Configure Salesforce settings via UI automation"
+      },
+      "ui:setup": {
+        "description": "Setup Salesforce features via UI automation"
+      }
+    },
+    "hooks": {
+      "init": "./dist/hooks/init"
+    }
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
