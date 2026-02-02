@@ -1,0 +1,34 @@
+{
+  "name": "@fcdo/devops-scripts",
+  "version": "1.0.0",
+  "description": "DevOps automation scripts for FCDO Salesforce CI/CD",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "bin": {
+    "fcdo-devops": "./dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc --watch",
+    "scratch:create": "node dist/scratch-org.js create",
+    "scratch:delete": "node dist/scratch-org.js delete",
+    "deploy": "node dist/deploy.js",
+    "test:apex": "node dist/test-runner.js",
+    "artifact:package": "node dist/artifact.js package",
+    "artifact:upload": "node dist/artifact.js upload",
+    "artifact:download": "node dist/artifact.js download"
+  },
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.500.0",
+    "@salesforce/core": "^6.5.0",
+    "archiver": "^6.0.0",
+    "commander": "^12.0.0",
+    "extract-zip": "^2.0.1",
+    "fast-xml-parser": "^4.3.0"
+  },
+  "devDependencies": {
+    "@types/archiver": "^6.0.0",
+    "@types/node": "^20.10.0",
+    "typescript": "^5.3.0"
+  }
+}

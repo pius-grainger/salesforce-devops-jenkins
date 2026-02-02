@@ -1,0 +1,467 @@
+#!/usr/bin/env groovy
+
+/**
+ * FCDO Salesforce DevOps Pipeline
+ *
+ * This pipeline handles:
+ * - Scratch org creation and testing for feature branches
+ * - Apex test execution with coverage enforcement
+ * - Provar regression testing
+ * - Artifact packaging and S3 upload
+ * - Promotion through Dev → QA → Prod
+ * - Semantic versioning and release
+ */
+
+pipeline {
+    agent {
+        label 'salesforce'
+    }
+
+    options {
+        buildDiscarder(logRotator(numToKeepStr: '20'))
+        timeout(time: 60, unit: 'MINUTES')
+        timestamps()
+        ansiColor('xterm')
+    }
+
+    environment {
+        // Salesforce credentials
+        SF_DEVHUB_AUTH_URL = credentials('sf-devhub-auth-url')
+        SF_DEV_AUTH_URL = credentials('sf-dev-auth-url')
+        SF_QA_AUTH_URL = credentials('sf-qa-auth-url')
+        SF_PROD_AUTH_URL = credentials('sf-prod-auth-url')
+
+        // AWS credentials for S3 artifacts
+        AWS_ACCESS_KEY_ID = credentials('aws-access-key-id')
+        AWS_SECRET_ACCESS_KEY = credentials('aws-secret-access-key')
+        AWS_REGION = 'eu-west-2'
+
+        // Provar configuration
+        PROVAR_HOME = '/opt/provar'
+        PROVAR_LICENSE = credentials('provar-license')
+
+        // Node.js version
+        NODE_VERSION = '18'
+
+        // Derived variables
+        SCRATCH_ORG_ALIAS = "fcdo-scratch-${BUILD_NUMBER}"
+        ARTIFACT_VERSION = ''
+    }
+
+    stages {
+        stage('Setup') {
+            steps {
+                script {
+                    echo "=".multiply(60)
+                    echo "FCDO Salesforce DevOps Pipeline"
+                    echo "=".multiply(60)
+                    echo "Branch: ${env.BRANCH_NAME ?: env.GIT_BRANCH}"
+                    echo "Build: ${BUILD_NUMBER}"
+                    echo "=".multiply(60)
+                }
+
+                // Install Node.js
+                nodejs(nodeJSInstallationName: "NodeJS ${NODE_VERSION}") {
+                    sh 'node --version'
+                    sh 'npm --version'
+                }
+
+                // Install dependencies
+                sh 'npm ci'
+                sh 'npm run build'
+
+                // Install Salesforce CLI
+                sh '''
+                    if ! command -v sf &> /dev/null; then
+                        npm install -g @salesforce/cli
+                    fi
+                    sf version
+                '''
+
+                // Authenticate to Dev Hub
+                sh '''
+                    echo "${SF_DEVHUB_AUTH_URL}" > /tmp/devhub_auth.txt
+                    sf org login sfdx-url -f /tmp/devhub_auth.txt -a DevHub -d
+                    rm /tmp/devhub_auth.txt
+                '''
+            }
+        }
+
+        stage('Create Scratch Org') {
+            when {
+                anyOf {
+                    branch 'feature/*'
+                    branch 'bugfix/*'
+                    changeRequest()
+                }
+            }
+            steps {
+                script {
+                    echo "Creating scratch org: ${SCRATCH_ORG_ALIAS}"
+                }
+
+                sh """
+                    npm run scratch:create -- -a ${SCRATCH_ORG_ALIAS} -d 1 -v DevHub
+                """
+
+                // Store scratch org info for later stages
+                script {
+                    env.SCRATCH_ORG_CREATED = 'true'
+                }
+            }
+            post {
+                failure {
+                    echo 'Failed to create scratch org'
+                }
+            }
+        }
+
+        stage('Run Apex Tests') {
+            parallel {
+                stage('Scratch Org Tests') {
+                    when {
+                        expression { env.SCRATCH_ORG_CREATED == 'true' }
+                    }
+                    steps {
+                        sh """
+                            npm run test:apex -- -o ${SCRATCH_ORG_ALIAS} -l RunLocalTests -m 75 -d test-results/scratch
+                        """
+                    }
+                    post {
+                        always {
+                            junit 'test-results/scratch/junit-results.xml'
+                            archiveArtifacts artifacts: 'test-results/scratch/**/*', allowEmptyArchive: true
+                        }
+                    }
+                }
+
+                stage('Dev Org Tests') {
+                    when {
+                        branch 'develop'
+                    }
+                    steps {
+                        // Authenticate to Dev org
+                        sh '''
+                            echo "${SF_DEV_AUTH_URL}" > /tmp/dev_auth.txt
+                            sf org login sfdx-url -f /tmp/dev_auth.txt -a DevOrg
+                            rm /tmp/dev_auth.txt
+                        '''
+
+                        sh '''
+                            npm run deploy:dev -- --check-only
+                            npm run test:apex -- -e dev -d test-results/dev
+                        '''
+                    }
+                    post {
+                        always {
+                            junit 'test-results/dev/junit-results.xml'
+                        }
+                    }
+                }
+            }
+        }
+
+        stage('Provar Regression Tests') {
+            when {
+                anyOf {
+                    branch 'develop'
+                    branch 'main'
+                    branch 'release/*'
+                }
+            }
+            steps {
+                script {
+                    echo "Running Provar regression tests"
+                }
+
+                // Set up Provar license
+                sh '''
+                    mkdir -p ${PROVAR_HOME}/licenses
+                    echo "${PROVAR_LICENSE}" > ${PROVAR_HOME}/licenses/license.key
+                '''
+
+                // Run Provar tests using ANT
+                sh '''
+                    cd provar
+                    ant -f build.xml \
+                        -DprovarHome=${PROVAR_HOME} \
+                        -DtestEnvironment=${BRANCH_NAME == 'main' ? 'qa' : 'dev'} \
+                        -DtestSuite=RegressionSuite \
+                        run-tests
+                '''
+            }
+            post {
+                always {
+                    junit 'provar/Results/**/*.xml'
+                    archiveArtifacts artifacts: 'provar/Results/**/*', allowEmptyArchive: true
+                }
+                failure {
+                    echo 'Provar regression tests failed - blocking deployment'
+                }
+            }
+        }
+
+        stage('Semantic Release') {
+            when {
+                branch 'main'
+            }
+            steps {
+                script {
+                    echo "Running semantic-release"
+                }
+
+                // Run semantic-release in dry-run first to get version
+                sh '''
+                    npx semantic-release --dry-run > release-output.txt 2>&1 || true
+                '''
+
+                script {
+                    def releaseOutput = readFile('release-output.txt')
+                    def versionMatch = releaseOutput =~ /next release version is (\d+\.\d+\.\d+)/
+                    if (versionMatch) {
+                        env.ARTIFACT_VERSION = versionMatch[0][1]
+                        echo "Next version: ${env.ARTIFACT_VERSION}"
+                    } else {
+                        env.ARTIFACT_VERSION = sh(
+                            script: 'node -p "require(\'./package.json\').version"',
+                            returnStdout: true
+                        ).trim()
+                        echo "Using existing version: ${env.ARTIFACT_VERSION}"
+                    }
+                }
+
+                // Actually run semantic-release
+                sh 'npx semantic-release'
+            }
+        }
+
+        stage('Package Artifact') {
+            when {
+                anyOf {
+                    branch 'main'
+                    branch 'release/*'
+                }
+            }
+            steps {
+                script {
+                    if (!env.ARTIFACT_VERSION) {
+                        env.ARTIFACT_VERSION = sh(
+                            script: 'node -p "require(\'./package.json\').version"',
+                            returnStdout: true
+                        ).trim()
+                    }
+                    echo "Packaging artifact version: ${env.ARTIFACT_VERSION}"
+                }
+
+                sh """
+                    npm run artifact:package -- -v ${ARTIFACT_VERSION} -b ${BUILD_NUMBER}
+                """
+
+                archiveArtifacts artifacts: 'artifacts/*.zip', fingerprint: true
+                archiveArtifacts artifacts: 'artifacts/*.metadata.json'
+            }
+        }
+
+        stage('Upload to S3') {
+            when {
+                anyOf {
+                    branch 'main'
+                    branch 'release/*'
+                }
+            }
+            steps {
+                script {
+                    def targetEnv = env.BRANCH_NAME == 'main' ? 'qa' : 'dev'
+                    echo "Uploading artifact to ${targetEnv} environment bucket"
+
+                    sh """
+                        npm run artifact:upload -- \
+                            -a artifacts/fcdo-sf-${ARTIFACT_VERSION}-${BUILD_NUMBER}.zip \
+                            -e ${targetEnv}
+                    """
+                }
+            }
+        }
+
+        stage('Deploy to QA') {
+            when {
+                branch 'main'
+            }
+            steps {
+                // Authenticate to QA org
+                sh '''
+                    echo "${SF_QA_AUTH_URL}" > /tmp/qa_auth.txt
+                    sf org login sfdx-url -f /tmp/qa_auth.txt -a QAOrg
+                    rm /tmp/qa_auth.txt
+                '''
+
+                script {
+                    echo "Deploying to QA environment"
+                }
+
+                sh '''
+                    npm run deploy:qa
+                '''
+            }
+            post {
+                success {
+                    echo 'Successfully deployed to QA'
+                    // Notify Slack
+                    slackSend(
+                        channel: '#sf-qa-deployments',
+                        color: 'good',
+                        message: "Deployed ${ARTIFACT_VERSION} to QA - Build ${BUILD_NUMBER}"
+                    )
+                }
+                failure {
+                    slackSend(
+                        channel: '#sf-qa-deployments',
+                        color: 'danger',
+                        message: "Failed to deploy to QA - Build ${BUILD_NUMBER}"
+                    )
+                }
+            }
+        }
+
+        stage('Post-Deploy UI Configuration (QA)') {
+            when {
+                branch 'main'
+            }
+            steps {
+                script {
+                    echo "Applying UI-based configurations to QA"
+                }
+
+                // Link the custom SF CLI plugin
+                sh '''
+                    npm run ui:install-plugin
+                '''
+
+                // Apply UI-based configurations that can't be done via Metadata API
+                sh '''
+                    sf ui setup apply \
+                        --target-org QAOrg \
+                        --config-file config/ui-automation/qa-setup.json \
+                        --continue-on-error
+                '''
+            }
+            post {
+                success {
+                    echo 'UI configurations applied successfully to QA'
+                }
+                failure {
+                    echo 'Some UI configurations failed - check logs for details'
+                    // Don't fail the pipeline for UI config issues, but warn
+                    unstable('UI configuration had failures')
+                }
+            }
+        }
+
+        stage('Deploy to Production') {
+            when {
+                buildingTag()
+                tag pattern: 'v\\d+\\.\\d+\\.\\d+', comparator: 'REGEXP'
+            }
+            options {
+                timeout(time: 24, unit: 'HOURS')
+            }
+            input {
+                message 'Deploy to Production?'
+                ok 'Deploy'
+                submitter 'release-managers'
+                parameters {
+                    choice(
+                        name: 'CONFIRM_DEPLOY',
+                        choices: ['No', 'Yes'],
+                        description: 'Confirm production deployment'
+                    )
+                }
+            }
+            steps {
+                script {
+                    if (params.CONFIRM_DEPLOY != 'Yes') {
+                        error('Production deployment not confirmed')
+                    }
+                }
+
+                // Authenticate to Production org
+                sh '''
+                    echo "${SF_PROD_AUTH_URL}" > /tmp/prod_auth.txt
+                    sf org login sfdx-url -f /tmp/prod_auth.txt -a ProdOrg
+                    rm /tmp/prod_auth.txt
+                '''
+
+                // Download artifact from QA bucket
+                sh '''
+                    npm run artifact:download -- -e qa -o artifacts/deploy
+                    npm run artifact:extract -- -a artifacts/deploy/*.zip -o artifacts/extracted
+                '''
+
+                // Deploy to production
+                sh '''
+                    npm run deploy:prod
+                '''
+
+                // Upload artifact to prod bucket for audit trail
+                sh '''
+                    npm run artifact:upload -- \
+                        -a artifacts/deploy/*.zip \
+                        -e prod
+                '''
+            }
+            post {
+                success {
+                    slackSend(
+                        channel: '#sf-prod-deployments',
+                        color: 'good',
+                        message: "Successfully deployed ${TAG_NAME} to Production"
+                    )
+
+                    emailext(
+                        subject: "Production Deployment Successful - ${TAG_NAME}",
+                        body: "Successfully deployed ${TAG_NAME} to Salesforce Production",
+                        to: 'sf-team@fcdo.gov.uk'
+                    )
+                }
+                failure {
+                    slackSend(
+                        channel: '#sf-prod-deployments',
+                        color: 'danger',
+                        message: "FAILED to deploy ${TAG_NAME} to Production"
+                    )
+
+                    emailext(
+                        subject: "Production Deployment FAILED - ${TAG_NAME}",
+                        body: "Failed to deploy ${TAG_NAME} to Salesforce Production. Please investigate immediately.",
+                        to: 'sf-team@fcdo.gov.uk'
+                    )
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            // Clean up scratch org if created
+            script {
+                if (env.SCRATCH_ORG_CREATED == 'true') {
+                    echo "Cleaning up scratch org: ${SCRATCH_ORG_ALIAS}"
+                    sh """
+                        npm run scratch:delete -- -o ${SCRATCH_ORG_ALIAS} -v DevHub || true
+                    """
+                }
+            }
+
+            // Clean workspace
+            cleanWs()
+        }
+
+        success {
+            echo 'Pipeline completed successfully'
+        }
+
+        failure {
+            echo 'Pipeline failed'
+        }
+    }
+}
